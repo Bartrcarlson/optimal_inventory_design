@@ -1,4 +1,4 @@
-# Plot allocation by strata
+# Plot Allocation by Strata
 
 ## Description of Scripts
 
@@ -40,7 +40,8 @@ python3 gen_spreadsheet.py #edit the spreadsheet
 python3 calc_sampling_intensity.py #results will be added to page 3 of the spreadsheet
 ```
 
-## Neyman optimal allocation
+
+## Neyman Optimal Allocation
 $$
 n_{h} = \left[ \frac{N_{h} S_{h}}{\displaystyle\sum_{h+1}^{L} N_{h} s_{h}} \right]
 $$
