@@ -56,7 +56,7 @@ def calc_sampling_intensities():
 
     hardset_adj(df)
 
-    def wighting_adj(df, total_plots):
+    def weighting_adj(df, total_plots):
         """
         Adjust the strata plot count based on the weight.
         if the weight is <1.0 then plot count is the weight * plot count.
@@ -66,28 +66,35 @@ def calc_sampling_intensities():
         many plots are in the strata to the total number of plots.
         hard set strata will not be increased
         """
-        # df["plot_count"] = df["plot_count"] * df["weight"]
-        # weighting should only occur to non hardset strata
+
+        # Apply weights only to non-hardset strata
         df.loc[df["hard_set_plot_number"] == 0, "plot_count"] = (
-            df.loc[df["hard_set_plot_number"] == 0, "plot_count"]
-            * df.loc[df["hard_set_plot_number"] == 0, "weight"]
+            (
+                df.loc[df["hard_set_plot_number"] == 0, "plot_count"]
+                * df.loc[df["hard_set_plot_number"] == 0, "weight"]
+            )
+            .round()
+            .astype(int)
         )
 
-        to_reallocate = total_plots - df["plot_count"].sum()
-        if to_reallocate > 0:
-            # df["plot_count"] = df["plot_count"] + (
-            #     to_reallocate * (df["plot_count"] / total_plots)
-            # )
-            df.loc[df["hard_set_plot_number"] == 0, "plot_count"] = df.loc[
-                df["hard_set_plot_number"] == 0, "plot_count"
-            ] + (to_reallocate * (df["plot_count"] / total_plots))
+        diff = total_plots - df["plot_count"].sum()
 
-        df["plot_count"] = df["plot_count"].round().astype(int)
+        # Get the ratios of the non-hardset strata plot counts to their total
+        non_hardset_total = df.loc[df["hard_set_plot_number"] == 0, "plot_count"].sum()
+        df["ratio"] = 0
+        df.loc[df["hard_set_plot_number"] == 0, "ratio"] = (
+            df.loc[df["hard_set_plot_number"] == 0, "plot_count"] / non_hardset_total
+        )
+
+        # Distribute the difference among the non-hardset strata based on the ratios
+        df.loc[df["hard_set_plot_number"] == 0, "plot_count"] += (
+            (df["ratio"] * diff).round().astype(int)
+        )
+        df.drop(columns=["ratio"], inplace=True)
+
         return df
 
-    wighting_adj(df, total_plots)
-
-    print(df)
+    weighting_adj(df, total_plots)
 
     with pd.ExcelWriter(
         cfg["paths"]["spreedsheet"], engine="openpyxl", mode="a"
