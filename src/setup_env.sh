@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Name of the virtual environment
-ENV_NAME="opt_plot_alloc"
+ENV_NAME="
+project_env
+"
 
 # Check if virtual environment already exists
 if [ -d "$ENV_NAME" ]; then
