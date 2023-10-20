@@ -1,0 +1,11 @@
+paths:
+  rasterfile: "../data/full_volume.tif"
+  shapefile: "../data/SVR_TimberStrata.shp"
+  spreedsheet: "../user_input/strata.xlsx"
+
+raster_band: 1
+
+shapefile_field_names:
+  strata: "Strata_Dat"
+
+
