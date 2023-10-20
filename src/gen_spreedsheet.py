@@ -14,35 +14,34 @@ def var_by_strata():
     """
     takes a rasterfile of tree volumes and a shapefile of strata and returns a dataframe
     with the standard deviation of the volumes in each strata.
-    the polygon can contain more than one occurrence of a strata, but they will be reported as one.
+    the polygon can contain more than one occurrence of a strata,
+    but they will be reported as one.
+    also calculates the total area within each strata.
     """
 
-    # Load the raster file
+    # Load
     raster = gdal.Open(cfg["paths"]["rasterfile"])
     rb = raster.GetRasterBand(cfg["raster_band"])
-
-    # Load the shapefile
     shape = gpd.read_file(cfg["paths"]["shapefile"])
 
     # Dissolve/merge polygons by the Strata_Dat column
     merged_shape = shape.dissolve(by=cfg["shapefile_field_names"]["strata"])
     merged_shape = merged_shape.reset_index()
     merged_shape = merged_shape.rename(columns={"index": "Strata_Dat"})
-    # Create an empty list to store standard deviations
+
     std_devs = []
+    areas = []
+
     # Get spatial reference from shapefile
     srs = ogr.osr.SpatialReference()
     srs.ImportFromWkt(shape.crs.to_wkt())
-    # Loop over each merged feature in shapefile
+
     for geometry, data in zip(merged_shape.geometry, merged_shape.iterrows()):
-        # Convert shapely geometry to ogr geometry
         ogr_geom = ogr.CreateGeometryFromWkt(geometry.wkt)
 
-        # Create an in-memory vector layer
         mem_ds = ogr.GetDriverByName("Memory").CreateDataSource("temp")
         layer = mem_ds.CreateLayer("temp", srs=srs, geom_type=ogr.wkbPolygon)
 
-        # Add the ogr_geom geometry to this layer
         featureDefn = layer.GetLayerDefn()
         feature = ogr.Feature(featureDefn)
         feature.SetGeometry(ogr_geom)
@@ -69,15 +68,15 @@ def var_by_strata():
         if nodata_value is not None:
             values = values[values != nodata_value]
 
-        # Calculate standard deviation
-        # if len(values) > 0:
+        area = geometry.area
+        areas.append([data[1]["Strata_Dat"], area])
         std_dev = np.std(values)
         std_devs.append([data[1]["Strata_Dat"], std_dev])
 
-    # Convert list to DataFrame
-    df = pd.DataFrame(std_devs, columns=["Strata", "StandardDev"])
-
-    return df
+    df_area = pd.DataFrame(areas, columns=["Strata", "Area"])
+    df_std = pd.DataFrame(std_devs, columns=["Strata", "StandardDev"])
+    result_df = pd.merge(df_std, df_area, on="Strata")
+    return result_df
 
 
 def generate_spreedsheet():
