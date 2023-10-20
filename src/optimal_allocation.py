@@ -25,6 +25,8 @@ def neyman_alloc(
 
 
 import unittest
+
+
 class TestNeymanAlloc(unittest.TestCase):
     def test_neyman_alloc(self):
         sample_size = 150
@@ -40,3 +42,4 @@ class TestNeymanAlloc(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    unittest.main()

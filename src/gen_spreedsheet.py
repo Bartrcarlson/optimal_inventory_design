@@ -95,7 +95,7 @@ def generate_spreedsheet():
     df_page1["Total_Plots"] = [0]
 
     df_page2 = var_by_strata()
-    df_page2["hard_set_plot number"] = 0
+    df_page2["hard_set_plot_number"] = 0
     df_page2["weight"] = 1.0
 
     with pd.ExcelWriter(cfg["paths"]["spreedsheet"], engine="openpyxl") as writer:
