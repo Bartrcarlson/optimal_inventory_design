@@ -6,15 +6,12 @@ import numpy as np
 gdal.UseExceptions()
 
 
-def var_by_strata():
+def var_by_strata(rasterfile, shapefile):
     """
     takes a rasterfile of tree volumes and a shapefile of strata and returns a dataframe
     with the standard deviation of the volumes in each strata.
     the polygon can contain more than one occurrence of a strata, but they will be reported as one.
     """
-    # Paths to files
-    rasterfile = "../data/full_volume.tif"
-    shapefile = "../data/SVR_TimberStrata.shp"
 
     # Load the raster file
     raster = gdal.Open(rasterfile)
@@ -80,4 +77,7 @@ def var_by_strata():
 
 
 if __name__ == "__main__":
-    print(var_by_strata())
+    # Paths to files
+    rasterfile = "../data/full_volume.tif"
+    shapefile = "../data/SVR_TimberStrata.shp"
+    print(var_by_strata(rasterfile, shapefile))
