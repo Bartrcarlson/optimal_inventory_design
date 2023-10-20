@@ -33,6 +33,11 @@ def calc_sampling_intensities():
             raise ValueError("The user has not set the total number of plots.")
         if (df["weight"] > 1.0).any() or (df["weight"] < 0.0).any():
             raise ValueError("The user has set a weight outside of 0.0 to 1.0")
+        # check that the hardcode number is not greater than the total number of plots.
+        if (df["hard_set_plot_number"].sum() > total_plots).any():
+            raise ValueError(
+                "The user has set a hard set number greater than the total number of plots."
+            )
         return df
 
     cleaning(df)
