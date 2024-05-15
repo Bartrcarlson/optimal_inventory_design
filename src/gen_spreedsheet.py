@@ -23,11 +23,12 @@ def var_by_strata():
     raster = gdal.Open(cfg["paths"]["rasterfile"])
     rb = raster.GetRasterBand(cfg["raster_band"])
     shape = gpd.read_file(cfg["paths"]["shapefile"])
+    strata_col = cfg["shapefile_field_names"]["strata"]
 
     # Dissolve/merge polygons by the Strata_Dat column
     merged_shape = shape.dissolve(by=cfg["shapefile_field_names"]["strata"])
     merged_shape = merged_shape.reset_index()
-    merged_shape = merged_shape.rename(columns={"index": "Strata_Dat"})
+    merged_shape = merged_shape.rename(columns={"index": strata_col})
 
     std_devs = []
     areas = []
@@ -69,9 +70,9 @@ def var_by_strata():
             values = values[values != nodata_value]
 
         area = geometry.area
-        areas.append([data[1]["Strata_Dat"], area])
+        areas.append([data[1][strata_col], area])
         std_dev = np.std(values)
-        std_devs.append([data[1]["Strata_Dat"], std_dev])
+        std_devs.append([data[1][strata_col], std_dev])
 
     df_area = pd.DataFrame(areas, columns=["Strata", "Area"])
     df_std = pd.DataFrame(std_devs, columns=["Strata", "StandardDev"])

@@ -1,11 +1,11 @@
 paths:
-  rasterfile: "../data/full_volume.tif"
-  shapefile: "../data/SVR_TimberStrata.shp"
+  rasterfile: "../data/CZU_POSTFIRE_CHM_3FEET.tif/CZU_POSTFIRE_CHM_3FEET.tif"
+  shapefile: "../data/v3_3_sampling_area.shp"
   spreedsheet: "../user_input/strata.xlsx"
 
 raster_band: 1
 
 shapefile_field_names:
-  strata: "Strata_Dat"
+  strata: "su"
 
 
